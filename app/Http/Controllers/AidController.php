@@ -89,7 +89,25 @@ class AidController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $aid = Aid::where('id', $id)->first();
+        if ( Aid::where('id', $id)->count() == 0)
+        {
+            return response()->json([
+                'Error' => 'Insumo No Existe'], 404);
+        }
+        try
+        {
+            $aid->name = $request->name;
+            $aid->measure = $request->measure;
+            $aid->type = $request->type;
+            $aid->unit = $request->unit;
+            $aid->refresh();
+        } catch (QueryException $e)
+        {
+            return response()->json([
+                'Error' => 'Error al Modificar Insumo'], 404);
+        }
+        return $aid;
     }
 
     /**
