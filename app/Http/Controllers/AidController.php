@@ -47,7 +47,7 @@ class AidController extends Controller
         } catch (QueryException $e)
         {
             return response()->json([
-                'Error' => 'Error al Registrar Insumo'], 404);
+                'Error' => 'Error al Registrar Insumo'], 400);
         }
         return $aid->id;
     }
@@ -105,7 +105,7 @@ class AidController extends Controller
         } catch (QueryException $e)
         {
             return response()->json([
-                'Error' => 'Error al Modificar Insumo'], 404);
+                'Error' => 'Error al Modificar Insumo'], 400);
         }
         return $aid;
     }
