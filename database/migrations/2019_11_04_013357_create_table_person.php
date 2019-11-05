@@ -17,7 +17,8 @@ class CreateTablePerson extends Migration
             $table->increments('id');
             $table->string('firstName');
             $table->string('lastName');
-            $table->string('ci');
+            $table->bigInteger('ci');
+            $table->bigInteger('phone');
             $table->timestamps();
         });
     }

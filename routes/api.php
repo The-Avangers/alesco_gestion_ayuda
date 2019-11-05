@@ -18,5 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::resource('aids', 'AidController');
 Route::resource('projects', 'ProjectController');
+Route::resource('people', 'PersonController');
 
 
