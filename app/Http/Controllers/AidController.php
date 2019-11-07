@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Aid;
 use \Illuminate\Database\QueryException;
@@ -15,7 +16,8 @@ class AidController extends Controller
      */
     public function index()
     {
-        //
+        $aids = DB::table('aid')->get();
+        return $aids;
     }
 
     /**
