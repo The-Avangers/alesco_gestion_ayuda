@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Person;
 use App\Project;
+use App\ProjectPayment;
 use App\ProjectPerson;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -80,8 +81,8 @@ class ProjectController extends Controller
     {
         try {
             $project = Project::where('id', $id)->get();
-            if (!$project)
-                return response()->json(['Error' => 'El projecto buscado no existe']);
+            if (count($project) == 0)
+                return response()->json(['Error' => 'El projecto buscado no existe'], 400);
             $projectPeople = ProjectPerson::where('projectId', $id)->get();
             $project[0]->paid = $project[0]->paid == 1;
             $peopleInvolved = array();
@@ -93,7 +94,7 @@ class ProjectController extends Controller
             $project[0]->peopleInvolved = $peopleInvolved;
             return $project[0];
         } catch (QueryException $exception){
-            return response()->json(['Error' => 'Error consultando el projecto']);
+            return response()->json(['Error' => 'Error consultando el projecto'], 400);
         }
     }
 
@@ -129,6 +130,10 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function updateProgress(Request $request) {
+
     }
 
 }

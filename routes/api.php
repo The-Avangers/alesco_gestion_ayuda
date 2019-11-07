@@ -18,6 +18,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::resource('aids', 'AidController');
 Route::resource('projects', 'ProjectController');
+Route::post('/projects/progress', 'ProjectController@updateProgress');
 Route::resource('people', 'PersonController');
+Route::resource('payments', 'PaymentController');
+
 
 
