@@ -8,5 +8,5 @@ class ProjectProgress extends Model
 {
     protected $table = 'project_progress';
     public $timestamps = false;
-    protected $fillable = ['projectId', 'milestone'];
+    protected $fillable = ['projectId', 'milestone', 'date'];
 }

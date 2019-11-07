@@ -6,6 +6,7 @@ use App\Person;
 use App\Project;
 use App\ProjectPayment;
 use App\ProjectPerson;
+use App\ProjectProgress;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -132,8 +133,24 @@ class ProjectController extends Controller
         //
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function updateProgress(Request $request) {
+        try {
+            $projectProgress = new ProjectProgress;
+            $projectProgress->projectId = $request->projectId;
+            $projectProgress->milestone = $request->milestone;
+            $projectProgress->date = $request->date;
+            $projectProgress->save();
+            return $projectProgress;
+        } catch (QueryException $exception) {
+            return response()->json(['Error' => 'Error agregando hito de proyecto'], 400);
 
+        }
     }
 
 }
