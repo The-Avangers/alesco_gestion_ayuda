@@ -19,7 +19,6 @@ class CreateTablePerson extends Migration
             $table->string('lastName');
             $table->bigInteger('ci');
             $table->bigInteger('phone');
-            $table->timestamps();
         });
     }
 

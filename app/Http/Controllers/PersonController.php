@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Person;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PersonController extends Controller
 {
@@ -15,7 +16,13 @@ class PersonController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $people = DB::table('person')->get();
+            return $people;
+        } catch (QueryException $exception) {
+            return response()->json([
+                'Error' => 'Error consultando personas'], 400);
+        }
     }
 
     /**
@@ -40,13 +47,15 @@ class PersonController extends Controller
             $person = new Person;
             $person->firstName = $request->firstName;
             $person->lastName = $request->lastName;
-            if ($request->phone > 99999999999 || $request->phone < 10000000000 ){
+            if ($request->phone > 9999999999 || $request->phone < 1000000000 ){
                 return response()->json(['Error' => 'El telefono ingresado es invalido'], 400);
             }
             $person->phone = $request->phone;
             $person->ci = $request->ci;
-            return $person->id;
+            $person->save();
+            return $person;
         } catch (QueryException $exception){
+            echo $exception;
             return response()->json(['Error' => 'Error agregando persona'], 400);
         }
 

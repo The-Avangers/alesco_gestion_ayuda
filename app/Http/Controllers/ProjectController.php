@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Person;
 use App\Project;
 use App\ProjectPerson;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -16,7 +18,15 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $projects = DB::table('project')->get();
+            foreach ($projects as $project)
+                $project->paid = $project->paid == 1;
+            return $projects;
+        } catch (QueryException $exception) {
+            return response()->json([
+                'Error' => 'Error consultando proyectos'], 400);
+        }
     }
 
     /**
@@ -43,13 +53,16 @@ class ProjectController extends Controller
             $project->startDate = $request->startDate;
             $project->endDate = $request->endDate;
             $project->price = $request->price;
+            $people = $request->people;
             $project->save();
-            $proyectPerson = new ProjectPerson;
-            $proyectPerson->projectId = $project->id;
-            $proyectPerson->personId = $request->personId;
-            $proyectPerson->role = $request->personRole;
-            $proyectPerson->save();
-            return $project->id;
+            foreach ($people as $person){
+                $proyectPerson = new ProjectPerson;
+                $proyectPerson->projectId = $project->id;
+                $proyectPerson->personId = $person['id'];
+                $proyectPerson->role = $person['role'];
+                $proyectPerson->save();
+            }
+            return $project;
         } catch (QueryException $exception) {
             return response()->json([
                 'Error' => 'Error al Registrar Proyecto'], 400);
@@ -65,7 +78,23 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $project = Project::where('id', $id)->get();
+            if (!$project)
+                return response()->json(['Error' => 'El projecto buscado no existe']);
+            $projectPeople = ProjectPerson::where('projectId', $id)->get();
+            $project[0]->paid = $project[0]->paid == 1;
+            $peopleInvolved = array();
+            foreach ($projectPeople as $projectPerson ){
+                $person = Person::where('id', $projectPerson->personId)->get();
+                $person[0]->role = $projectPerson->role;
+                array_push($peopleInvolved, $person[0]);
+            }
+            $project[0]->peopleInvolved = $peopleInvolved;
+            return $project[0];
+        } catch (QueryException $exception){
+            return response()->json(['Error' => 'Error consultando el projecto']);
+        }
     }
 
     /**
@@ -101,4 +130,5 @@ class ProjectController extends Controller
     {
         //
     }
+
 }

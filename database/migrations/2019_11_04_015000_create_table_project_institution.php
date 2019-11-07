@@ -19,7 +19,6 @@ class CreateTableProjectInstitution extends Migration
             $table->foreign('projectId')->references('id')->on('project')->onDelete('cascade');
             $table->integer('institutionId')->unsigned();
             $table->foreign('institutionId')->references('id')->on('institution')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

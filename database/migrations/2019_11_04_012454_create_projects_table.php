@@ -16,11 +16,10 @@ class CreateProjectsTable extends Migration
         Schema::create('project', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->timestamp('startDate');
+            $table->timestamp('startDate')->nullable(true);
             $table->timestamp('endDate')->nullable(true);
             $table->integer('price');
             $table->boolean('paid')->default(false);
-            $table->timestamps();
         });
     }
 

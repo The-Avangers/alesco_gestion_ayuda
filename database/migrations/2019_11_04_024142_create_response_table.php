@@ -18,7 +18,6 @@ class CreateResponseTable extends Migration
             $table->boolean('approved');
             $table->string('measure')->nullable();
             $table->bigInteger('unit')->nullable();
-            $table->timestamps();
         });
     }
 
