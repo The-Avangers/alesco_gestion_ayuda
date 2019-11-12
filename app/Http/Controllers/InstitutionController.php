@@ -49,7 +49,6 @@ class InstitutionController extends Controller
             $institution->save();
             return $institution;
         } catch (QueryException $exception) {
-            echo $exception;
             return response()->json([
                 'Error' => 'Error al Registrar Institucion'], 400);
         }
