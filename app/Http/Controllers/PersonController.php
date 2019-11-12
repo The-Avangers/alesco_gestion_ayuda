@@ -55,7 +55,6 @@ class PersonController extends Controller
             $person->save();
             return $person;
         } catch (QueryException $exception){
-            echo $exception;
             return response()->json(['Error' => 'Error agregando persona'], 400);
         }
 
