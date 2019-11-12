@@ -86,8 +86,10 @@ class ProjectController extends Controller
                 return response()->json(['Error' => 'El projecto buscado no existe'], 400);
             $peopleInvolved = array();
             $projectProgresses = array();
+            $payments = array();
             $projectPeople = ProjectPerson::where('projectId', $id)->get();
             $projectProgress = ProjectProgress::where('projectId', $id)->get();
+            $projectPayments = ProjectPayment::where('projectId', $id)->get();
             $project[0]->paid = $project[0]->paid == 1;
             foreach ($projectPeople as $projectPerson ){
                 $person = Person::where('id', $projectPerson->personId)->get();
@@ -100,8 +102,15 @@ class ProjectController extends Controller
                 $progressProject->date = $progress->date;
                 array_push($projectProgresses, $progressProject);
             }
+            foreach ($projectPayments as $payment) {
+                $projectPayment = new \stdClass;
+                $projectPayment->amount = $payment->amount;
+                $projectPayment->date = $payment->paymentDate;
+                array_push($payments, $projectPayment);
+            }
             $project[0]->peopleInvolved = $peopleInvolved;
             $project[0]->progress = $projectProgresses;
+            $project[0]->payments = $payments;
             return $project[0];
         } catch (QueryException $exception){
             return response()->json(['Error' => 'Error consultando el projecto'], 400);
