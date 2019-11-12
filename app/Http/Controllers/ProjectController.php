@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Institution;
 use App\Person;
 use App\Project;
 use App\ProjectInstitution;
@@ -96,6 +97,8 @@ class ProjectController extends Controller
             $projectProgress = ProjectProgress::where('projectId', $id)->get();
             $projectPayments = ProjectPayment::where('projectId', $id)->get();
             $projectInstitutions = ProjectInstitution::where('projectId', $id)->get();
+            $institutions = Institution::where('id', $projectInstitutions->institutionId)->get();
+            $project[0]->institution = $institutions[0]->name;
             $project[0]->paid = $project[0]->paid == 1;
             foreach ($projectPeople as $projectPerson ){
                 $person = Person::where('id', $projectPerson->personId)->get();
@@ -117,7 +120,6 @@ class ProjectController extends Controller
             $project[0]->peopleInvolved = $peopleInvolved;
             $project[0]->progress = $projectProgresses;
             $project[0]->payments = $payments;
-            $project[0]->institution = $projectInstitutions[0]->name;
             return $project[0];
         } catch (QueryException $exception){
             return response()->json(['Error' => 'Error consultando el projecto'], 400);
