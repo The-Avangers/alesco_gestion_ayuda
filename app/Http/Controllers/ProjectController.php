@@ -97,7 +97,7 @@ class ProjectController extends Controller
             $projectProgress = ProjectProgress::where('projectId', $id)->get();
             $projectPayments = ProjectPayment::where('projectId', $id)->get();
             $projectInstitutions = ProjectInstitution::where('projectId', $id)->get();
-            $institutions = Institution::where('id', $projectInstitutions->institutionId)->get();
+            $institutions = Institution::where('id', $projectInstitutions[0]->institutionId)->get();
             $project[0]->institution = $institutions[0]->name;
             $project[0]->paid = $project[0]->paid == 1;
             foreach ($projectPeople as $projectPerson ){
