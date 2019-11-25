@@ -18,7 +18,7 @@ class CreateTableProjectProgress extends Migration
             $table->integer('projectId')->unsigned();
             $table->foreign('projectId')->references('id')->on('project')->onDelete('cascade');
             $table->string('milestone');
-            $table->timestamps();
+            $table->timestamp('date')->nullable(true);
         });
     }
 

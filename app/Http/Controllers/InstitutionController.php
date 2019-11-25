@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Person;
+use App\Institution;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PersonController extends Controller
+class InstitutionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,12 +16,12 @@ class PersonController extends Controller
      */
     public function index()
     {
-        try {
-            $people = DB::table('person')->get();
-            return $people;
-        } catch (QueryException $exception) {
+        try{
+            $institutions = DB::table('institution')->get();
+            return $institutions;
+        }catch (QueryException $ex) {
             return response()->json([
-                'Error' => 'Error consultando personas'], 400);
+                'Error' => 'Error al Consultar instituciones'], 400);
         }
     }
 
@@ -43,19 +43,14 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        try{
-            $person = new Person;
-            $person->firstName = $request->firstName;
-            $person->lastName = $request->lastName;
-            if ($request->phone > 9999999999 || $request->phone < 1000000000 ){
-                return response()->json(['Error' => 'El telefono ingresado es invalido'], 400);
-            }
-            $person->phone = $request->phone;
-            $person->ci = $request->ci;
-            $person->save();
-            return $person;
-        } catch (QueryException $exception){
-            return response()->json(['Error' => 'Error agregando persona'], 400);
+        try {
+            $institution = new Institution;
+            $institution->name = $request->name;
+            $institution->save();
+            return $institution;
+        } catch (QueryException $exception) {
+            return response()->json([
+                'Error' => 'Error al Registrar Institucion'], 400);
         }
 
     }

@@ -18,8 +18,7 @@ class CreateProjectPerson extends Migration
             $table->integer('projectId')->unsigned();
             $table->foreign('projectId')->references('id')->on('project')->onDelete('cascade');
             $table->integer('personId')->references('id')->on('person')->onDelete('cascade');
-            $table->enum('role', ['encargado, interesado']);
-            $table->timestamps();
+            $table->enum('role', ['encargado', 'interesado']);
         });
     }
 

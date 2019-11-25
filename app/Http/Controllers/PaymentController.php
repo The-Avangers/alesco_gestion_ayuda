@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Person;
+use App\Project;
+use App\ProjectPayment;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class PersonController extends Controller
+class PaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,13 +16,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        try {
-            $people = DB::table('person')->get();
-            return $people;
-        } catch (QueryException $exception) {
-            return response()->json([
-                'Error' => 'Error consultando personas'], 400);
-        }
+        //
     }
 
     /**
@@ -32,7 +26,7 @@ class PersonController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -44,20 +38,28 @@ class PersonController extends Controller
     public function store(Request $request)
     {
         try{
-            $person = new Person;
-            $person->firstName = $request->firstName;
-            $person->lastName = $request->lastName;
-            if ($request->phone > 9999999999 || $request->phone < 1000000000 ){
-                return response()->json(['Error' => 'El telefono ingresado es invalido'], 400);
+            $project = Project::where('id', $request->projectId)->get();
+            if (count($project) == 0 )
+                return response()->json(['Error' => 'El projecto no existe'], 400);
+            $projectPayment = new ProjectPayment;
+            $projectPayment->projectId = $project[0]->id;
+            $projectPayment->amount = $request->amount;
+            $projectPayment->paymentDate = $request->paymentDate;
+            $projectPayment->save();
+            $projectPayments = ProjectPayment::where('projectId', $project[0]->id)->get();
+            $amountPaid = 0;
+            foreach ($projectPayments as $payment){
+                $amountPaid += $payment->amount;
             }
-            $person->phone = $request->phone;
-            $person->ci = $request->ci;
-            $person->save();
-            return $person;
-        } catch (QueryException $exception){
-            return response()->json(['Error' => 'Error agregando persona'], 400);
+            if ($amountPaid >= $project[0]->price)
+                $project[0]->paid = true;
+            $project[0]->update();
+            $projectPayment->projectId = $project[0]->id;
+            $projectPayment->paid = $project[0]->paid == 1 || $project[0]->paid == true;
+            return $projectPayment;
+        } catch (QueryException $exception) {
+            return response()->json(['Error' => 'No se pudo registrar el pago'], 400);
         }
-
     }
 
     /**

@@ -17,7 +17,6 @@ class CreateResponseTable extends Migration
             $table->increments('id');
             $table->boolean('approved');
             $table->bigInteger('unit')->nullable();
-            $table->timestamps();
         });
     }
 
