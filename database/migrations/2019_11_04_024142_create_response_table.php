@@ -16,7 +16,6 @@ class CreateResponseTable extends Migration
         Schema::create('response', function (Blueprint $table) {
             $table->increments('id');
             $table->boolean('approved');
-            $table->string('measure')->nullable();
             $table->bigInteger('unit')->nullable();
             $table->timestamps();
         });
