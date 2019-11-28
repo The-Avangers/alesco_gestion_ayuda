@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Aid;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Request as Req;
 
 class RequestController extends Controller
 {
@@ -13,7 +17,8 @@ class RequestController extends Controller
      */
     public function index()
     {
-        //
+        $reqs = DB::table('requests')->get();
+        return $reqs;
     }
 
     /**
@@ -34,7 +39,19 @@ class RequestController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try
+        {
+            $req = new Req;
+            $req->id_user = $request->id_user;
+            $req->id_aid = $request->id_aid;
+            $req->save();
+        } catch (QueryException $e)
+        {
+            echo $e;
+            return response()->json([
+                'Error' => 'Error al Registrar Solicitud'], 400);
+        }
+        return $req->id;
     }
 
     /**
@@ -45,7 +62,13 @@ class RequestController extends Controller
      */
     public function show($id)
     {
-        //
+        $req = Req::where('id', $id)->get();
+        if ( Req::where('id', $id)->count() == 0)
+        {
+            return response()->json([
+                'Error' => 'Solicitud No Existe'], 404);
+        }
+        return $req;
     }
 
     /**
@@ -79,6 +102,12 @@ class RequestController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $req = Req::where('id', $id)->get();
+        if ( Req::where('id', $id)->count() == 0)
+        {
+            return response()->json([
+                'Error' => 'Solicitud No Existe'], 404);
+        }
+        $req->delete();
     }
 }
