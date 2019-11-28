@@ -12,6 +12,7 @@ use App\ProjectProgress;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProjectController extends Controller
 {
@@ -23,13 +24,14 @@ class ProjectController extends Controller
     public function index()
     {
         try {
+            Log::channel('stdout')->info("Getting all projects");
             $projects = DB::table('project')->get();
             foreach ($projects as $project)
                 $project->paid = $project->paid == 1;
             return $projects;
         } catch (QueryException $exception) {
-            return response()->json([
-                'Error' => 'Error consultando proyectos'], 400);
+            Log::channel('stdout')->error($exception);
+            return response()->json(['Error' => 'Error consultando proyectos'], 400);
         }
     }
 
