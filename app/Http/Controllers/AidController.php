@@ -46,7 +46,7 @@ class AidController extends Controller
             $aid->type = $request->type;
             $aid->unit = $request->unit;
             $aid->save();
-        } catch (QueryException $e)
+        } catch (\Exception $e)
         {
             return response()->json([
                 'Error' => 'Error al Registrar Insumo'], 400);
@@ -104,7 +104,7 @@ class AidController extends Controller
             $aid->type = $request->type;
             $aid->unit = $request->unit;
             $aid->refresh();
-        } catch (QueryException $e)
+        } catch (\Exception $e)
         {
             return response()->json([
                 'Error' => 'Error al Modificar Insumo'], 400);

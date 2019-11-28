@@ -45,7 +45,7 @@ class RequestController extends Controller
             $req->id_user = $request->id_user;
             $req->id_aid = $request->id_aid;
             $req->save();
-        } catch (QueryException $e)
+        } catch (\Exception $e)
         {
             echo $e;
             return response()->json([

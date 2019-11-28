@@ -19,7 +19,7 @@ class PersonController extends Controller
         try {
             $people = DB::table('person')->get();
             return $people;
-        } catch (QueryException $exception) {
+        } catch (\Exception $exception) {
             return response()->json([
                 'Error' => 'Error consultando personas'], 400);
         }
@@ -54,7 +54,7 @@ class PersonController extends Controller
             $person->ci = $request->ci;
             $person->save();
             return $person;
-        } catch (QueryException $exception){
+        } catch (\Exception $exception){
             return response()->json(['Error' => 'Error agregando persona'], 400);
         }
 

@@ -29,7 +29,7 @@ class ProjectController extends Controller
             foreach ($projects as $project)
                 $project->paid = $project->paid == 1;
             return $projects;
-        } catch (QueryException $exception) {
+        } catch (\Exception $exception) {
             Log::channel('stdout')->error($exception);
             return response()->json(['Error' => 'Error consultando proyectos'], 400);
         }
@@ -73,7 +73,7 @@ class ProjectController extends Controller
                 $proyectPerson->save();
             }
             return $project;
-        } catch (QueryException $exception) {
+        } catch (\Exception $exception) {
             return response()->json([
                 'Error' => 'Error al Registrar Proyecto'], 400);
         }
@@ -123,7 +123,8 @@ class ProjectController extends Controller
             $project[0]->progress = $projectProgresses;
             $project[0]->payments = $payments;
             return $project[0];
-        } catch (QueryException $exception){
+        } catch (\Exception $exception){
+            Log::channel('stdout')->error($exception);
             return response()->json(['Error' => 'Error consultando el projecto'], 400);
         }
     }
@@ -176,7 +177,7 @@ class ProjectController extends Controller
             $projectProgress->date = $request->date;
             $projectProgress->save();
             return $projectProgress;
-        } catch (QueryException $exception) {
+        } catch (\Exception $exception) {
             return response()->json(['Error' => 'Error agregando hito de proyecto'], 400);
 
         }

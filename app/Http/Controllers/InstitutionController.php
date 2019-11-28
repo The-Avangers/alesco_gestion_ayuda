@@ -19,7 +19,7 @@ class InstitutionController extends Controller
         try{
             $institutions = DB::table('institution')->get();
             return $institutions;
-        }catch (QueryException $ex) {
+        }catch (\Exception $ex) {
             return response()->json([
                 'Error' => 'Error al Consultar instituciones'], 400);
         }
@@ -48,7 +48,7 @@ class InstitutionController extends Controller
             $institution->name = $request->name;
             $institution->save();
             return $institution;
-        } catch (QueryException $exception) {
+        } catch (\Exception $exception) {
             return response()->json([
                 'Error' => 'Error al Registrar Institucion'], 400);
         }

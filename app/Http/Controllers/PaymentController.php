@@ -57,7 +57,7 @@ class PaymentController extends Controller
             $projectPayment->projectId = $project[0]->id;
             $projectPayment->paid = $project[0]->paid == 1 || $project[0]->paid == true;
             return $projectPayment;
-        } catch (QueryException $exception) {
+        } catch (\Exception $exception) {
             return response()->json(['Error' => 'No se pudo registrar el pago'], 400);
         }
     }
