@@ -22,6 +22,7 @@ Route::post('/projects/progress', 'ProjectController@updateProgress')->name('pro
 Route::resource('people', 'PersonController');
 Route::resource('payments', 'PaymentController');
 Route::resource('institutions', 'InstitutionController');
+Route::resource('requests', 'RequestController');
 
 
 
