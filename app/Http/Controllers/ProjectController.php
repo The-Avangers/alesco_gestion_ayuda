@@ -74,6 +74,7 @@ class ProjectController extends Controller
             }
             return $project;
         } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception);
             return response()->json([
                 'Error' => 'Error al Registrar Proyecto'], 400);
         }
@@ -178,6 +179,7 @@ class ProjectController extends Controller
             $projectProgress->save();
             return $projectProgress;
         } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception);
             return response()->json(['Error' => 'Error agregando hito de proyecto'], 400);
 
         }

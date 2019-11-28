@@ -6,6 +6,7 @@ use App\Person;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PersonController extends Controller
 {
@@ -55,6 +56,7 @@ class PersonController extends Controller
             $person->save();
             return $person;
         } catch (\Exception $exception){
+            Log::channel('stdout')->error($exception);
             return response()->json(['Error' => 'Error agregando persona'], 400);
         }
 
