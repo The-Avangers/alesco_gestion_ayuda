@@ -17,6 +17,11 @@ class CreateResponseTable extends Migration
             $table->increments('id');
             $table->boolean('approved');
             $table->bigInteger('unit')->nullable();
+            $table->integer('id_req')->unsigned();
+            $table->foreign('id_req')->references('id')->on('requests')->onDelete('cascade');
+            $table->integer('id_user')->unsigned();
+            $table->foreign('id_user')->references('id')->on('user')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
