@@ -53,8 +53,9 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        $project = new Project;
+        $projectInstitution = new ProjectInstitution;
         try{
-            $project = new Project;
             $project->name = $request->name;
             $project->startDate = $request->startDate;
             $project->endDate = $request->endDate;
@@ -75,6 +76,12 @@ class ProjectController extends Controller
             return $project;
         } catch (\Exception $exception) {
             Log::channel('stdout')->error($exception);
+            if ($project){
+                $project->delete();
+            }
+            if ($projectInstitution){
+                $projectInstitution->delete();
+            }
             return response()->json([
                 'Error' => 'Error al Registrar Proyecto'], 400);
         }
