@@ -83,7 +83,7 @@ class ProjectController extends Controller
                 $projectInstitution->delete();
             }
             return response()->json([
-                'Error' => 'Error al Registrar Proyecto'], 400);
+                'Error' => $exception->getMessage()], 400);
         }
 
     }
