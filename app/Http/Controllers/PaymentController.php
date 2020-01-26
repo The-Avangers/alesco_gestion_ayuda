@@ -6,6 +6,7 @@ use App\Project;
 use App\ProjectPayment;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -58,6 +59,7 @@ class PaymentController extends Controller
             $projectPayment->paid = $project[0]->paid == 1 || $project[0]->paid == true;
             return $projectPayment;
         } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception);
             return response()->json(['Error' => 'No se pudo registrar el pago'], 400);
         }
     }

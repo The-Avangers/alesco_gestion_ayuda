@@ -49,8 +49,8 @@ class InstitutionController extends Controller
             $institution->save();
             return $institution;
         } catch (\Exception $exception) {
-            return response()->json([
-                'Error' => 'Error al Registrar Institucion'], 400);
+            Log::channel('stdout')->error($exception);
+            return response()->json(['Error' => 'Error al Registrar Institucion'], 400);
         }
 
     }
