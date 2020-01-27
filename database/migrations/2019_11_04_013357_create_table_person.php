@@ -15,6 +15,8 @@ class CreateTablePerson extends Migration
     {
         Schema::create('person', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('email');
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('firstName');
             $table->string('lastName');
             $table->bigInteger('ci');

@@ -44,17 +44,28 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
+            $request->validate([
+                'firstName' => 'required|string',
+                'lastName' => 'required|string',
+                'email' => 'required|email',
+                'phone' => 'required',
+                'ci' => 'required'
+            ]);
             $person = new Person;
             $person->firstName = $request->firstName;
             $person->lastName = $request->lastName;
-            if ($request->phone > 9999999999 || $request->phone < 1000000000 ){
+            $person->email = $request->email;
+            if ($request->phone > 9999999999 || $request->phone < 1000000000) {
                 return response()->json(['Error' => 'El telefono ingresado es invalido'], 400);
             }
             $person->phone = $request->phone;
             $person->ci = $request->ci;
             $person->save();
             return $person;
+        } catch (\Illuminate\Validation\ValidationException $exception){
+            Log::channel('stdout')->error($exception);
+            return response()->json($exception->validator->errors());
         } catch (\Exception $exception){
             Log::channel('stdout')->error($exception);
             return response()->json(['Error' => 'Error agregando persona'], 400);
