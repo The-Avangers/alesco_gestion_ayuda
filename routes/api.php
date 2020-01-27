@@ -23,6 +23,7 @@ Route::resource('people', 'PersonController');
 Route::resource('payments', 'PaymentController');
 Route::resource('institutions', 'InstitutionController');
 Route::resource('requests', 'RequestController');
+Route::resource('user', 'Auth\RegisterController');
 
 
 

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
 {
@@ -58,15 +61,44 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param  Request  $request
      * @return \App\User
      */
-    protected function create(array $data)
+    protected function store (Request $request)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        $rules = [
+            'name' => 'required|max:20',
+            'lastname' => 'required|max:20',
+            'email' => 'required|email|unique:user',
+            'password' => 'required|min:8',
+            'role' => 'in: Administrador,Solicitante,Consultor'
+        ];
+        $messages = [
+            'name.required' => 'El nombre es requerido',
+            'name.max' => 'El nombre del usuario no puede exceder a :max caracteres',
+            'lastname.required' => 'El apellido es requerido',
+            'lastname.max' => 'El apellido del usuario no puede exceder a :max caracteres',
+            'email.required' => 'El email es requerido',
+            'email.email' => 'El email es inválido',
+            'email.unique' => 'El email ya existe',
+            'password.required' => 'La contraseña es requerida',
+            'password.min' => 'La contraseña debe tener ocho caracteres como mínimo',
+            'role.in' => 'Rol inexistente'
+        ];
+        try
+        {
+            $request->validate($rules,$messages);
+            $user = new User();
+            $user->name = $request->name;
+            $user->lastname = $request->lastname;
+            $user->email = $request->email;
+            $user->role = $request->role;
+            $user->password = Hash::make($request->password);
+            $user->save();
+        } catch (ValidationException $exception) {
+            Log::channel('stdout')->error($exception->getMessage());
+            return response()->json($exception->validator->errors(),400);
+        }
+        return $user;
     }
 }
