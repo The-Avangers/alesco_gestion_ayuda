@@ -34,7 +34,13 @@ class ProjectController extends Controller
         "people.*.role.required" => "El rol de al menos un usuario es requerido",
         "people.*.role.string" => "El rol del usuario debe ser un string",
         "institutionId.required" => "El id de la institución es requerido ",
-        "institutionId.numeric" => "El id de la institucion debe ser un numero"
+        "institutionId.numeric" => "El id de la institucion debe ser un numero",
+        "projectId.required" => "El id del proyecto es requerido",
+        "projectId.numeric" => "El id del proyecto debe ser un numero",
+        "milestone.required"=> "El hito es requerido",
+        "milestone.string" => "El hito debe ser un string",
+        "date.required" => "La fecha del hito es requerida",
+        "date.date" => 'El campo de fecha de hito debe ser una fecha'
     ];
 
     /**
@@ -169,7 +175,7 @@ class ProjectController extends Controller
             return $project[0];
         } catch (\Exception $exception){
             Log::channel('stdout')->error($exception);
-            return response()->json(['Error' => 'Error consultando el projecto'], 400);
+            return response()->json(['Error' => $exception->getMessage()], 400);
         }
     }
 
@@ -215,15 +221,23 @@ class ProjectController extends Controller
      */
     public function updateProgress(Request $request) {
         try {
+            $request->validate([
+                'projectId' => 'required|numeric',
+                'milestone' => 'required|string',
+                'date'=> 'sometimes|required|date',
+            ], $this->messages);
             $projectProgress = new ProjectProgress;
             $projectProgress->projectId = $request->projectId;
             $projectProgress->milestone = $request->milestone;
             $projectProgress->date = $request->date;
             $projectProgress->save();
             return $projectProgress;
+        } catch (ValidationException $exception) {
+            Log::channel('stdout')->error($exception);
+            return response()->json($exception->validator->errors(), 400);
         } catch (\Exception $exception) {
             Log::channel('stdout')->error($exception);
-            return response()->json(['Error' => 'Error agregando hito de proyecto'], 400);
+            return response()->json(['Error' => $exception->getMessage()], 400);
 
         }
     }
