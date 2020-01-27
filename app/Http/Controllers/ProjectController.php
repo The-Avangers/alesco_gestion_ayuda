@@ -13,9 +13,30 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ProjectController extends Controller
 {
+
+    public $messages = [
+        "name.required" => "El nombre del proyecto es requerido",
+        "name.string" => "El nombre del proyecto debe ser un string",
+        "startDate.required" => "La fecha de inicio es requerida",
+        "startDate.date" => "El campo de la fecha de inicio debe ser una fecha",
+        "endDate.required" => "La fecha de entrega es requerida",
+        "endDate.date" => "El campo de la fecha de entrega debe ser una fecha",
+        "endDate.after:startDate" => "La fecha de entrega debe ser mayor a la fecha de inicio",
+        "endDate.after:today" => "La fecha de entrega debe ser despues de la fecha actual",
+        "people.required"=> "El campo people es requerido y debe ser un arreglo",
+        "people.array" => "El campo people debe ser un arreglo",
+        "people.*.id.required" => "El id de al menos una persona es requerido",
+        "people.*.id.numeric" => "El id de la persona debe ser numerico",
+        "people.*.role.required" => "El rol de al menos un usuario es requerido",
+        "people.*.role.string" => "El rol del usuario debe ser un string",
+        "institutionId.required" => "El id de la institución es requerido ",
+        "institutionId.numeric" => "El id de la institucion debe ser un numero"
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -56,6 +77,17 @@ class ProjectController extends Controller
         $project = new Project;
         $projectInstitution = new ProjectInstitution;
         try{
+            $request->validate([
+                'name' => 'required',
+                'startDate' => 'required|date',
+                'endDate'=> 'required|date|after:startDate|after:today',
+                'price'=> 'required|numeric',
+                'people'=> 'required|array',
+                'people.*.id'=> 'required|numeric',
+                'people.*.role'=> 'required|string',
+                'institutionId'=> 'required|numeric',
+            ], $this->messages);
+
             $project->name = $request->name;
             $project->startDate = $request->startDate;
             $project->endDate = $request->endDate;
@@ -74,6 +106,10 @@ class ProjectController extends Controller
                 $proyectPerson->save();
             }
             return $project;
+        } catch (ValidationException $exception) {
+            Log::channel('stdout')->error($exception);
+            return response()->json($exception->validator->errors(), 400);
+
         } catch (\Exception $exception) {
             Log::channel('stdout')->error($exception);
             if ($project){
