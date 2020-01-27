@@ -71,7 +71,7 @@ class RegisterController extends Controller
             'lastname' => 'required|max:20',
             'email' => 'required|email|unique:user',
             'password' => 'required|min:8',
-            'role' => 'in: Administrador,Solicitante,Consultor'
+            'role' => 'in:Administrador,Solicitante,Consultor'
         ];
         $messages = [
             'name.required' => 'El nombre es requerido',
