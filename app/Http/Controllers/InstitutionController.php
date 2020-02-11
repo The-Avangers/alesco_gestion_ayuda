@@ -6,6 +6,7 @@ use App\Institution;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InstitutionController extends Controller
 {
@@ -17,9 +18,11 @@ class InstitutionController extends Controller
     public function index()
     {
         try{
+            Log::channel('stdout')->info('Getting all institutions');
             $institutions = DB::table('institution')->get();
             return $institutions;
         }catch (\Exception $ex) {
+            Log::channel('stdout')->error($ex);
             return response()->json([
                 'Error' => 'Error al Consultar instituciones'], 400);
         }

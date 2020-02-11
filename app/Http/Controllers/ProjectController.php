@@ -53,8 +53,12 @@ class ProjectController extends Controller
         try {
             Log::channel('stdout')->info("Getting all projects");
             $projects = DB::table('project')->get();
-            foreach ($projects as $project)
+            foreach ($projects as $project) {
                 $project->paid = $project->paid == 1;
+                $projectInstitution = ProjectInstitution::where('projectId', $project->id)->get();
+                $institution = Institution::where('id', $projectInstitution[0]->id)->get();
+                $project->institutionName = $institution[0]->name;
+            }
             return $projects;
         } catch (\Exception $exception) {
             Log::channel('stdout')->error($exception);

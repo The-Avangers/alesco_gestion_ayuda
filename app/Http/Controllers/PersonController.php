@@ -18,9 +18,11 @@ class PersonController extends Controller
     public function index()
     {
         try {
+            Log::channel('stdout')->info('Getting all people');
             $people = DB::table('person')->get();
             return $people;
         } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception);
             return response()->json([
                 'Error' => 'Error consultando personas'], 400);
         }
@@ -55,7 +57,7 @@ class PersonController extends Controller
             $person = new Person;
             $person->firstName = $request->firstName;
             $person->lastName = $request->lastName;
-            $person->email = $request->email;
+//            $person->email = $request->email;
             if ($request->phone > 9999999999 || $request->phone < 1000000000) {
                 return response()->json(['Error' => 'El telefono ingresado es invalido'], 400);
             }
