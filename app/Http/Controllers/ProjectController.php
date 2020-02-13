@@ -23,10 +23,10 @@ class ProjectController extends Controller
         "name.string" => "El nombre del proyecto debe ser un string",
         "startDate.required" => "La fecha de inicio es requerida",
         "startDate.date" => "El campo de la fecha de inicio debe ser una fecha",
+        "startDate.after_or_equal" => "El campo de la fecha de inicio debe ser mayor o igual a hoy",
         "endDate.required" => "La fecha de entrega es requerida",
         "endDate.date" => "El campo de la fecha de entrega debe ser una fecha",
-        "endDate.after:startDate" => "La fecha de entrega debe ser mayor a la fecha de inicio",
-        "endDate.after:today" => "La fecha de entrega debe ser despues de la fecha actual",
+        "endDate.after" => "La fecha de entrega debe ser mayor a la fecha de inicio",
         "people.required"=> "El campo people es requerido y debe ser un arreglo",
         "people.array" => "El campo people debe ser un arreglo",
         "people.*.id.required" => "El id de al menos una persona es requerido",
@@ -56,7 +56,7 @@ class ProjectController extends Controller
             foreach ($projects as $project) {
                 $project->paid = $project->paid == 1;
                 $projectInstitution = ProjectInstitution::where('projectId', $project->id)->get();
-                $institution = Institution::where('id', $projectInstitution[0]->id)->get();
+                $institution = Institution::where('id', $projectInstitution[0]->institutionId)->get();
                 $project->institutionName = $institution[0]->name;
             }
             return $projects;
@@ -89,8 +89,8 @@ class ProjectController extends Controller
         try{
             $request->validate([
                 'name' => 'required',
-                'startDate' => 'required|date',
-                'endDate'=> 'required|date|after:startDate|after:today',
+                'startDate' => 'required|date|after_or_equal:yesterday',
+                'endDate'=> 'required|date|after:startDate',
                 'price'=> 'required|numeric',
                 'people'=> 'required|array',
                 'people.*.id'=> 'required|numeric',

@@ -19,7 +19,7 @@ class CreateTablePerson extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('firstName');
             $table->string('lastName');
-            $table->bigInteger('ci')->unique();
+            $table->bigInteger('ci');
             $table->bigInteger('phone');
             $table->unique(['ci']);
         });
