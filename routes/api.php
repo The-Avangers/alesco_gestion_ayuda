@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,10 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::resource('aids', 'AidController');
-Route::resource('projects', 'ProjectController');
-Route::post('/projects/progress', 'ProjectController@updateProgress')->name('project.updateProgress');
-Route::resource('people', 'PersonController');
-Route::resource('payments', 'PaymentController');
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::resource('projects', 'ProjectController');
+    Route::post('/projects/progress', 'ProjectController@updateProgress')->name('project.updateProgress');
+    Route::resource('people', 'PersonController');
+    Route::resource('payments', 'PaymentController');
+
+});
 Route::resource('institutions', 'InstitutionController');
 Route::resource('requests', 'RequestController');
 Route::resource('user', 'Auth\RegisterController');

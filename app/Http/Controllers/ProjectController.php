@@ -11,12 +11,14 @@ use App\ProjectPerson;
 use App\ProjectProgress;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class ProjectController extends Controller
 {
+
 
     public $messages = [
         "name.required" => "El nombre del proyecto es requerido",
@@ -51,6 +53,11 @@ class ProjectController extends Controller
     public function index()
     {
         try {
+            $user = Auth::user();
+            if ($user->role != 'Administrador' && $user->role != 'Consultor'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
+            Log::channel('stdout')->info($user);
             Log::channel('stdout')->info("Getting all projects");
             $projects = DB::table('project')->get();
             foreach ($projects as $project) {
@@ -62,7 +69,7 @@ class ProjectController extends Controller
             return $projects;
         } catch (\Exception $exception) {
             Log::channel('stdout')->error($exception);
-            return response()->json(['Error' => 'Error consultando proyectos'], 400);
+            return response()->json(['Message' => 'Error consultando proyectos'], 400);
         }
     }
 
@@ -85,6 +92,10 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $project = new Project;
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         $projectInstitution = new ProjectInstitution;
         try{
             $request->validate([
@@ -142,6 +153,10 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
+        $user = Auth::user();
+        if ($user->role != 'Administrador' && $user->role != 'Consultor'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         try {
             $project = Project::where('id', $id)->get();
             if (count($project) == 0)
@@ -191,7 +206,10 @@ class ProjectController extends Controller
      */
     public function edit($id)
     {
-        //
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
     }
 
     /**
@@ -203,7 +221,10 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
     }
 
     /**
@@ -214,7 +235,10 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = Auth::user();
+        if ($user->role != 'Administrador' && $user->role != 'Consultor'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
     }
 
     /**

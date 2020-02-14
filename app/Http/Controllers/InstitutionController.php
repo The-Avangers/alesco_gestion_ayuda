@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Institution;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -18,6 +19,10 @@ class InstitutionController extends Controller
     public function index()
     {
         try{
+            $user = Auth::user();
+            if ($user->role != 'Administrador' && $user->role != 'Consultor'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
             Log::channel('stdout')->info('Getting all institutions');
             $institutions = DB::table('institution')->get();
             return $institutions;
@@ -46,7 +51,12 @@ class InstitutionController extends Controller
      */
     public function store(Request $request)
     {
+
         try {
+            $user = Auth::user();
+            if ($user->role != 'Administrador'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
             $institution = new Institution;
             $institution->name = $request->name;
             $institution->save();

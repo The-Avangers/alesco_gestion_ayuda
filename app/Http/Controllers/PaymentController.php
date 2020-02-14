@@ -6,6 +6,7 @@ use App\Project;
 use App\ProjectPayment;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
@@ -39,6 +40,10 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         try{
+            $user = Auth::user();
+            if ($user->role != 'Administrador'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
             $project = Project::where('id', $request->projectId)->get();
             if (count($project) == 0 )
                 return response()->json(['Error' => 'El projecto no existe'], 400);

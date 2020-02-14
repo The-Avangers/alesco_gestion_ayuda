@@ -53,6 +53,7 @@ class LoginController extends Controller
             return response()->json([
                 'Error' => 'Clave Inválida, Intente Nuevamente'], 404);
         }
-        return $user;
+        $token = $user->createToken('Access Token')->accessToken;
+        return response($user)->header('token', $token);
     }
 }
