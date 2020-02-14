@@ -54,6 +54,6 @@ class LoginController extends Controller
                 'Error' => 'Clave Inválida, Intente Nuevamente'], 404);
         }
         $token = $user->createToken('Access Token')->accessToken;
-        return response($user)->header('token', $token);
+        return response($user)->header('token', $token)->header('Access-Control-Expose-Headers', 'token');
     }
 }
