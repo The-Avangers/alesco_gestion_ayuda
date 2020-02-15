@@ -66,7 +66,7 @@ class PersonController extends Controller
             $person = new Person;
             $person->firstName = $request->firstName;
             $person->lastName = $request->lastName;
-//            $person->email = $request->email;
+            $person->email = $request->email;
             if ($request->phone > 9999999999 || $request->phone < 1000000000) {
                 return response()->json(['Error' => 'El telefono ingresado es invalido'], 400);
             }
@@ -76,7 +76,7 @@ class PersonController extends Controller
             return $person;
         } catch (\Illuminate\Validation\ValidationException $exception){
             Log::channel('stdout')->error($exception);
-            return response()->json($exception->validator->errors());
+            return response()->json($exception->validator->errors(), 400);
         } catch (\Exception $exception){
             Log::channel('stdout')->error($exception);
             return response()->json(['Error' => 'Error agregando persona'], 400);
