@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Aid;
@@ -16,6 +17,10 @@ class AidController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         $aids = DB::table('aid')->get();
         return $aids;
     }
@@ -40,6 +45,10 @@ class AidController extends Controller
     {
         try
         {
+            $user = Auth::user();
+            if ($user->role != 'Administrador'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
             $aid = new Aid;
             $aid->name = $request->name;
             $aid->measure = $request->measure;
@@ -62,6 +71,10 @@ class AidController extends Controller
      */
     public function show($id)
     {
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         $aid = Aid::where('id', $id)->get();
         if ( Aid::where('id', $id)->count() == 0)
         {
@@ -91,6 +104,10 @@ class AidController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         $aid = Aid::where('id', $id)->first();
         if ( Aid::where('id', $id)->count() == 0)
         {

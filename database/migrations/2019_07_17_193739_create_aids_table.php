@@ -17,7 +17,7 @@ class CreateAidsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('measure');
-            $table->enum('type', ['Médicina', 'Alimento', 'Limpieza']);
+            $table->enum('type', ['Medicina', 'Alimento', 'Limpieza']);
             $table->bigInteger('unit');
             $table->timestamps();
         });
