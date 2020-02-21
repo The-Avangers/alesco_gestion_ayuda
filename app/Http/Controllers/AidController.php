@@ -18,7 +18,7 @@ class AidController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->role != 'Administrador' && $user->role != 'Solicitante'){
+        if ($user->role != 'Administrador'){
             return response()->json(['Message' => 'Unauthorized'], 401);
         }
         $aids = DB::table('aid')->get();
