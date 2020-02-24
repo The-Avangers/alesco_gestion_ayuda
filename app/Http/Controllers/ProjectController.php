@@ -225,6 +225,52 @@ class ProjectController extends Controller
         if ($user->role != 'Administrador'){
             return response()->json(['Message' => 'Unauthorized'], 401);
         }
+        try{
+            $request->validate([
+                'name' => 'required',
+                'startDate' => 'required|date|after_or_equal:yesterday',
+                'endDate'=> 'required|date|after:startDate',
+                'price'=> 'required|numeric',
+                'people'=> 'required|array',
+                'people.*.id'=> 'required|numeric',
+                'people.*.role'=> 'required|string',
+                'institutionId'=> 'required|numeric',
+            ], $this->messages);
+
+            $project = Project::find($id);
+            $project->name = $request->name;
+            $project->startDate = $request->startDate;
+            $project->endDate = $request->endDate;
+            $project->price = $request->price;
+            $people = $request->people;
+            $project->save();
+            $projectInstitution = ProjectInstitution::where('projectId', $id)->get();
+            $projectInstitution[0]->projectId = $project->id;
+            $projectInstitution[0]->institutionId = $request->institutionId;
+            $projectInstitution[0]->save();
+            $currentPeople = ProjectPerson::where('projectId', $id)->get();
+            foreach ($people as $person){
+                $proyectPerson = new ProjectPerson;
+                $proyectPerson->projectId = $project->id;
+                $proyectPerson->personId = $person['id'];
+                $proyectPerson->role = $person['role'];
+                $proyectPerson->save();
+            }
+            foreach ($currentPeople as $person) {
+                $person->delete();
+            }
+            return $project;
+        } catch (ValidationException $exception) {
+            Log::channel('stdout')->error($exception);
+            return response()->json($exception->validator->errors(), 400);
+
+        } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception);
+            return response()->json([
+                'Error' => $exception->getMessage()], 400);
+        }
+
+
     }
 
     /**
