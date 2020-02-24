@@ -228,7 +228,6 @@ class ProjectController extends Controller
         try{
             $request->validate([
                 'name' => 'required',
-                'startDate' => 'required|date|after_or_equal:yesterday',
                 'endDate'=> 'required|date|after:startDate',
                 'price'=> 'required|numeric',
                 'people'=> 'required|array',
