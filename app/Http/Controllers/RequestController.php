@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\Aid;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Request as Req;
@@ -17,7 +19,18 @@ class RequestController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         $reqs = DB::table('requests')->get();
+        foreach ($reqs as $req){
+            $user_req = User::where('id',$req->id_user)->get();
+            $aid_req = Aid::where('id',$req->id_aid)->get();
+            $req->aid = $aid_req[0]->name." ".$aid_req[0]->measure;
+            $req->user_name = $user_req[0]->name." ".$user_req[0]->lastname;
+            $req->email = $user_req[0]->email;
+        }
         return $reqs;
     }
 
@@ -39,15 +52,19 @@ class RequestController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         try
         {
             $req = new Req;
             $req->id_user = $request->id_user;
             $req->id_aid = $request->id_aid;
+            $req->created_at = $request->created_at;
             $req->save();
-        } catch (\Exception $e)
+        } catch (Exception $e)
         {
-            echo $e;
             return response()->json([
                 'Error' => 'Error al Registrar Solicitud'], 400);
         }
@@ -62,6 +79,10 @@ class RequestController extends Controller
      */
     public function show($id)
     {
+        $user = Auth::user();
+        if ($user->role != 'Administrador'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
         $req = Req::where('id', $id)->get();
         if ( Req::where('id', $id)->count() == 0)
         {
