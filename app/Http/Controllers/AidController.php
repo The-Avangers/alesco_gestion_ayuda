@@ -81,7 +81,7 @@ class AidController extends Controller
             return response()->json([
                 'Error' => 'Insumo No Existe'], 404);
         }
-        return $aid;
+        return $aid[0];
     }
 
     /**
@@ -120,7 +120,7 @@ class AidController extends Controller
             $aid->measure = $request->measure;
             $aid->type = $request->type;
             $aid->unit = $request->unit;
-            $aid->refresh();
+            $aid->save();
         } catch (\Exception $e)
         {
             return response()->json([
