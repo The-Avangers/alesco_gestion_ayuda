@@ -76,7 +76,19 @@ class InstitutionController extends Controller
      */
     public function show($id)
     {
-        //
+        try{
+            $user = Auth::user();
+            if ($user->role != 'Administrador' && $user->role != 'Consultor'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
+            Log::channel('stdout')->info('Getting institution');
+            $institution = Institution::find($id);
+            return $institution;
+        } catch (\Exception $exception){
+            Log::channel('stdout')->error($exception);
+            return response()->json(['Error' => 'Error al obtener Institucion'], 400);
+        }
+
     }
 
     /**
@@ -99,7 +111,21 @@ class InstitutionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            Log::channel('stdout')->info('Edit institution');
+            $user = Auth::user();
+            if ($user->role != 'Administrador'){
+                Log::channel('stdout')->error('Unauthorized');
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
+            $institution = Institution::find($id);
+            $institution->name = $request->name;
+            $institution->save();
+            return $institution;
+        } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception);
+            return response()->json(['Error' => 'Error al Editar Institucion'], 400);
+        }
     }
 
     /**
