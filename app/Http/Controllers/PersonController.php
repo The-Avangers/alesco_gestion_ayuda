@@ -92,7 +92,18 @@ class PersonController extends Controller
      */
     public function show($id)
     {
-        //
+        try{
+            $user = Auth::user();
+            if ($user->role != 'Administrador' && $user->role != 'Consultor'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
+            Log::channel('stdout')->info('Getting Person');
+            $person = Person::find($id);
+            return $person;
+        } catch (\Exception $exception){
+            Log::channel('stdout')->error($exception);
+            return response()->json(['Error' => 'Error al obtener Persona'], 400);
+        }
     }
 
     /**
@@ -115,7 +126,36 @@ class PersonController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $user = Auth::user();
+            if ($user->role != 'Administrador'){
+                return response()->json(['Message' => 'Unauthorized'], 401);
+            }
+            $request->validate([
+                'firstName' => 'required|string',
+                'lastName' => 'required|string',
+                'email' => 'required|email',
+                'phone' => 'required',
+                'ci' => 'required'
+            ]);
+            $person = Person::find($id);
+            $person->firstName = $request->firstName;
+            $person->lastName = $request->lastName;
+            $person->email = $request->email;
+            if ($request->phone > 9999999999 || $request->phone < 1000000000) {
+                return response()->json(['Error' => 'El telefono ingresado es invalido'], 400);
+            }
+            $person->phone = $request->phone;
+            $person->ci = $request->ci;
+            $person->save();
+            return $person;
+        } catch (\Illuminate\Validation\ValidationException $exception){
+            Log::channel('stdout')->error($exception);
+            return response()->json($exception->validator->errors(), 400);
+        } catch (\Exception $exception){
+            Log::channel('stdout')->error($exception);
+            return response()->json(['Error' => 'Error editando persona'], 400);
+        }
     }
 
     /**
