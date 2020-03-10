@@ -18,7 +18,7 @@ class CreateProjectsTable extends Migration
             $table->string('name');
             $table->timestamp('startDate')->nullable(true);
             $table->timestamp('endDate')->nullable(true);
-            $table->float('price');
+            $table->double('price');
             $table->boolean('paid')->default(false);
         });
     }
