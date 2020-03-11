@@ -17,7 +17,7 @@ class CreateTableProjectPayments extends Migration
             $table->increments('id');
             $table->integer('projectId')->unsigned();
             $table->foreign('projectId')->references('id')->on('project')->onDelete('cascade');
-            $table->integer('amount');
+            $table->double('amount');
             $table->timestamp('paymentDate');
         });
     }
