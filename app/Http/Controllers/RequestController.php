@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Request as Req;
+use App\Response as Resp;
+use Illuminate\Support\Facades\Log;
 
 class RequestController extends Controller
 {
@@ -23,13 +25,35 @@ class RequestController extends Controller
         if ($user->role != 'Administrador'){
             return response()->json(['Message' => 'Unauthorized'], 401);
         }
-        $reqs = DB::table('requests')->get();
-        foreach ($reqs as $req){
-            $user_req = User::where('id',$req->id_user)->get();
-            $aid_req = Aid::where('id',$req->id_aid)->get();
-            $req->aid = $aid_req[0]->name." ".$aid_req[0]->measure;
-            $req->user_name = $user_req[0]->name." ".$user_req[0]->lastname;
-            $req->email = $user_req[0]->email;
+        try {
+            $reqs = Req::all();
+            foreach ($reqs as $req) {
+                $user_req = User::where('id', $req->id_user)->get();
+                $aid_req = Aid::where('id', $req->id_aid)->get();
+                $req->aid = $aid_req[0]->name . " " . $aid_req[0]->measure;
+                $req->user_name = $user_req[0]->name . " " . $user_req[0]->lastname;
+                $req->email = $user_req[0]->email;
+                $resp = Resp::where('id_req',$req->id);
+                if ($resp->count() == 0)
+                {
+                    $req->status = "Esperando Respuesta";
+                }
+                else
+                {
+                    if ($resp[$resp->count()-1]->approved)
+                    {
+                        $req->status = "Aprobada";
+                    }
+                    else
+                    {
+                        $req->status = "Negada";
+                    }
+                }
+            }
+        } catch(Exception $e)
+        {
+            Log::channel('stdout')->error($e);
+            return response()->json(['Message' => 'Error Obteniendo las Solicitudes'], 400);
         }
         return $reqs;
     }
@@ -53,7 +77,7 @@ class RequestController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if ($user->role != 'Administrador'){
+        if ($user->role != 'Administrador' && $user->role != 'Solicitante'){
             return response()->json(['Message' => 'Unauthorized'], 401);
         }
         try
@@ -77,19 +101,42 @@ class RequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id_user)
     {
         $user = Auth::user();
-        if ($user->role != 'Administrador'){
+        if ($user->role != 'Administrador' && $user->role != 'Solicitante'){
             return response()->json(['Message' => 'Unauthorized'], 401);
         }
-        $req = Req::where('id', $id)->get();
-        if ( Req::where('id', $id)->count() == 0)
+        try
         {
-            return response()->json([
-                'Error' => 'Solicitud No Existe'], 404);
+            $reqs = Req::where('id_user',$id_user)->get();
+            foreach ($reqs as $req)
+            {
+                $aid_req = Aid::where('id',$req->id_aid)->get();
+                $req->aid = $aid_req[0]->name." ".$aid_req[0]->measure;
+                $resp = Resp::where('id_req',$req->id);
+                if ($resp->count() == 0)
+                {
+                    $req->status = "Esperando Respuesta";
+                }
+                else
+                {
+                    if ($resp[$resp->count()-1]->approved)
+                    {
+                        $req->status = "Aprobada";
+                    }
+                    else
+                    {
+                        $req->status = "Negada";
+                    }
+                }
+            }
+        } catch(Exception $e)
+        {
+            Log::channel('stdout')->error($e);
+            return response()->json(['Message' => 'Error Obteniendo las Solicitudes'], 400);
         }
-        return $req;
+        return $reqs;
     }
 
     /**
@@ -130,5 +177,42 @@ class RequestController extends Controller
                 'Error' => 'Solicitud No Existe'], 404);
         }
         $req->delete();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function userRequests($id_user)
+    {
+        $user = Auth::user();
+        if ($user->role != 'Administrador' && $user->role != 'Solicitante'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
+        $reqs = Req::where('id_user',$id_user);
+        foreach ($reqs as $req)
+        {
+            $aid_req = Aid::where('id',$req->id_aid)->get();
+            $req->aid = $aid_req[0]->name." ".$aid_req[0]->measure;
+            $resp =  Res::where('id_req',$req->id)->get();
+            if ($resp->count() == 0)
+            {
+                $req->status = "Esperando Respuesta";
+            }
+            else
+            {
+                if ($resp[0]->approved)
+                {
+                    $req->status = "Aprobada";
+                }
+                else
+                {
+                    $req->status = "Negada";
+                }
+            }
+        }
+        return $reqs;
     }
 }
