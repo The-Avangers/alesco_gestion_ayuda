@@ -180,41 +180,4 @@ class RequestController extends Controller
         }
         $req->delete();
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function userRequests($id_user)
-    {
-        $user = Auth::user();
-        if ($user->role != 'Administrador' && $user->role != 'Solicitante'){
-            return response()->json(['Message' => 'Unauthorized'], 401);
-        }
-        $reqs = Req::where('id_user',$id_user);
-        foreach ($reqs as $req)
-        {
-            $aid_req = Aid::where('id',$req->id_aid)->get();
-            $req->aid = $aid_req[0]->name." ".$aid_req[0]->measure;
-            $resp =  Res::where('id_req',$req->id)->get();
-            if ($resp->count() == 0)
-            {
-                $req->status = "Esperando Respuesta";
-            }
-            else
-            {
-                if ($resp[0]->approved)
-                {
-                    $req->status = "Aprobada";
-                }
-                else
-                {
-                    $req->status = "Negada";
-                }
-            }
-        }
-        return $reqs;
-    }
 }
