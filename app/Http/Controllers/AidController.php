@@ -21,7 +21,7 @@ class AidController extends Controller
         if ($user->role != 'Administrador'){
             return response()->json(['Message' => 'Unauthorized'], 401);
         }
-        $aids = DB::table('aid')->get();
+        $aids = DB::table('aid')->orderBy('name')->get();
         return $aids;
     }
 
