@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('aids', 'AidController');
     Route::resource('projects', 'ProjectController');
+    Route::resource('response', 'ResponseController');
     Route::post('/projects/progress', 'ProjectController@updateProgress')->name('project.updateProgress');
     Route::resource('people', 'PersonController');
     Route::resource('payments', 'PaymentController');
