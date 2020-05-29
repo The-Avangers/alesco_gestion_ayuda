@@ -33,10 +33,11 @@ class RequestController extends Controller
                 $req->aid = $aid_req[0]->name . " " . $aid_req[0]->measure;
                 $req->user_name = $user_req[0]->name . " " . $user_req[0]->lastname;
                 $req->email = $user_req[0]->email;
-                $resp = Resp::where('id_req',$req->id);
+                $resp = Resp::where('id_req',$req->id)->get();
                 if ($resp->count() == 0)
                 {
                     $req->status = "Esperando Respuesta";
+                    $req->statusnumber = -1;
                     $req->unit = "NA";
                 }
                 else
@@ -44,11 +45,13 @@ class RequestController extends Controller
                     if ($resp[$resp->count()-1]->approved)
                     {
                         $req->status = "Aprobada";
+                        $req->statusnumber = 1;
                         $req->unit = $resp[$resp->count()-1]->unit;
                     }
                     else
                     {
-                        $resp->unit = "NA";
+                        $req->unit = "NA";
+                        $req->statusnumber = 0;
                         $req->status = "Negada";
                     }
                 }
@@ -88,7 +91,7 @@ class RequestController extends Controller
             $req = new Req;
             $req->id_user = $request->id_user;
             $req->id_aid = $request->id_aid;
-            $req->created_at = $request->created_at;
+            $req->created_at = date('Y-m-d');
             $req->save();
         } catch (Exception $e)
         {
@@ -122,6 +125,7 @@ class RequestController extends Controller
                 {
                     $req->status = "Esperando Respuesta";
                     $resp->unit = "NA";
+                    $req->statusnumber = -1;
                 }
                 else
                 {
@@ -129,11 +133,13 @@ class RequestController extends Controller
                     {
                         $req->status = "Aprobada";
                         $req->unit = $resp[$resp->count()-1]->unit;
+                        $req->statusnumber = 1;
                     }
                     else
                     {
                         $resp->unit = "NA";
                         $req->status = "Negada";
+                        $req->statusnumber = 0;
                     }
                 }
             }
