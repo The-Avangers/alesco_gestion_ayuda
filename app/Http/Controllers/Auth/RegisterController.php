@@ -96,7 +96,7 @@ class RegisterController extends Controller
             $user->password = Hash::make($request->password);
             $user->save();
             $token = $user->createToken('Access Token')->accessToken;
-            return response($user)->header('token', $token);
+            return response($user)->header('token', $token)->header('Access-Control-Expose-Headers', 'token');
         } catch (ValidationException $exception) {
             Log::channel('stdout')->error($exception->getMessage());
             return response()->json($exception->validator->errors(),400);
