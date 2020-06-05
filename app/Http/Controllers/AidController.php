@@ -32,7 +32,14 @@ class AidController extends Controller
      */
     public function create()
     {
-        //
+        $user = Auth::user();
+        if (($user->role != 'Administrador') && ($user->role != "Solicitante"))
+        {
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
+        $aids = DB::table('aid')->select('id','name', 'measure')->
+        where('unit', '>', 0)->orderBy('name')->get();
+        return $aids;
     }
 
     /**
