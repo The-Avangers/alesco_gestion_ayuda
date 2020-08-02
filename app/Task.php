@@ -8,5 +8,5 @@ class Task extends Model
 {
     public $timestamps = false;
     protected $table = 'task';
-    protected $fillable = ['name', 'projectId', 'completed', 'completionDate'];
+    protected $fillable = ['name', 'projectId', 'completed', 'completionDate', 'description'];
 }

@@ -24,7 +24,7 @@ class TaskController extends Controller
         "people.*.numeric" => "El identificador de los encargados debe ser numerico",
         "completed.boolean" => "El campo de completado debe ser un booleano",
         "completionDate.date"=> 'la fecha de completación debe ser una fecha',
-        "completionDate.before_or_equal" => 'La fecha de completación debe ser menor o igual a hoy'
+        "completionDate.before_or_equal" => 'La fecha de completación debe ser menor o igual a hoy',
     ];
 
     /**
@@ -44,6 +44,10 @@ class TaskController extends Controller
             Log::channel('stdout')->info($tasks);
             foreach ($tasks as $task) {
                 $taskPeople = TaskPerson::where('taskId', $task->id)->get();
+                $project = Project::find($task->projectId);
+                $task->project = $project;
+                $task->project->paid = !!$task->project->paid;
+                unset($task->projectId);
                 $people = array();
 //                Log::channel('stdout')->info($taskPeople);
                 foreach ($taskPeople as $taskPerson) {
@@ -97,12 +101,14 @@ class TaskController extends Controller
                 'completed' => 'boolean',
                 'completionDate' => 'date|before_or_equal:yesterday',
                 'people' => 'array',
-                'people.*' => 'numeric'
+                'people.*' => 'numeric',
+                'description' => 'nullable'
             ], $this->messages);
             $task->name = $request->name;
             $task->projectId = $request->projectId;
             $task->completed = $request->completed;
             $task->completionDate = $request->completionDate ? $request->completionDate : null;
+            $task->description = $request->description;
             $task->save();
             if (count($request->people) > 0) {
                 $projectPeople = ProjectPerson::where('projectId',$request->projectId)->get();
@@ -159,7 +165,11 @@ class TaskController extends Controller
         try {
             $task = Task::find($id);
             $tasksPeople = TaskPerson::where('taskId', $task->id)->get();
+            $project = Project::find($task->projectId);
+            $task->project = $project;
+            unset($task->projectId);
             $people = array();
+            $task->project->paid = !!$task->project->paid;
             foreach ($tasksPeople as $taskPerson) {
                 $person = Person::where('id', $taskPerson->personId)->get();
                 array_push($people, $person[0]);
@@ -199,20 +209,21 @@ class TaskController extends Controller
             return response()->json(['Message' => 'Unauthorized'], 401);
         }
         try {
+            Log::channel('stdout')->info(['Updating task with id',$id]);
             $request->validate([
                 'name'=> 'required',
                 'completed' => 'boolean',
-                'completionDate' => 'date|before_or_equal:yesterday',
+                'completionDate' => 'date|before_or_equal:tomorrow',
                 'people' => 'array',
-                'people.*' => 'numeric'
+                'people.*' => 'numeric',
+                'description' => 'nullable'
             ], $this->messages);
-            Log::channel('stdout')->info(['Updating task with id',$id]);
             $task = Task::find($id);
-//            Log::channel('stdout')->info($task);
             $task->name = $request->name;
             $task->completed = $request->completed;
             $task->completionDate = $request->completionDate ? $request->completionDate : null;
-            Log::channel('stdout')->info('Before task');
+            $task->description = $request->description;
+            Log::channel('stdout')->info(['Before task', $task->description]);
             $task->save();
             Log::channel('stdout')->info('Task Updated');
             $currentTaskPeople = TaskPerson::where('taskId', $id)->get();
