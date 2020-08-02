@@ -22,10 +22,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('projects', 'ProjectController');
     Route::resource('response', 'ResponseController');
     Route::post('/projects/progress', 'ProjectController@updateProgress')->name('project.updateProgress');
+    Route::get('projects/{id}/peopleInCharge', 'ProjectController@getPeopleInCharge')->name('project.getPeopleInCharge');
     Route::resource('people', 'PersonController');
     Route::resource('payments', 'PaymentController');
     Route::resource('institutions', 'InstitutionController');
     Route::resource('requests', 'RequestController');
+    Route::resource('tasks', 'TaskController');
 });
 Route::resource('user', 'Auth\RegisterController');
 Route::post('login', 'Auth\LoginController@login')->name('user.login');

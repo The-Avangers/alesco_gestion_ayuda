@@ -235,8 +235,9 @@ class ProjectController extends Controller
                 'people.*.role'=> 'required|string',
                 'institutionId'=> 'required|numeric',
             ], $this->messages);
-
+            Log::channel('stdout')->info(['Getting project with id', $id]);
             $project = Project::find($id);
+            Log::channel('stdout')->info($project);
             $project->name = $request->name;
             $project->startDate = $request->startDate;
             $project->endDate = $request->endDate;
@@ -312,6 +313,33 @@ class ProjectController extends Controller
             Log::channel('stdout')->error($exception);
             return response()->json(['Error' => $exception->getMessage()], 400);
 
+        }
+    }
+
+    /**
+     * Get People in charge of a Project
+     *
+     * @param  int id
+     * @return \Illuminate\Http\Response
+     */
+    public function getPeopleInCharge($id) {
+        $user = Auth::user();
+        if ($user->role != 'Administrador' && $user->role != 'Consultor'){
+            return response()->json(['Message' => 'Unauthorized'], 401);
+        }
+        try {
+            $people = array();
+            $projectPeople = ProjectPerson::where('projectId', $id)->get();
+            foreach ($projectPeople as $projectPerson) {
+                if ($projectPerson->role == 'encargado') {
+                    $person = Person::find($projectPerson->personId);
+                    array_push($people, $person);
+                }
+            }
+            return $people;
+        } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception->getMessage());
+            return response()->json(['Message' => 'Error obteniendo encargados del proyecto'], 400);
         }
     }
 

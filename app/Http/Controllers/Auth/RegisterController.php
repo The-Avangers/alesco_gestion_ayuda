@@ -100,6 +100,10 @@ class RegisterController extends Controller
         } catch (ValidationException $exception) {
             Log::channel('stdout')->error($exception->getMessage());
             return response()->json($exception->validator->errors(),400);
+        } catch (\Exception $exception) {
+            Log::channel('stdout')->error($exception);
+            return response()->json([
+                'Error' => $exception->getMessage()], 400);
         }
 
     }
