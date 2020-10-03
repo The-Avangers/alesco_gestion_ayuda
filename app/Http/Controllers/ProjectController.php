@@ -9,6 +9,8 @@ use App\ProjectInstitution;
 use App\ProjectPayment;
 use App\ProjectPerson;
 use App\ProjectProgress;
+use App\Task;
+use App\TaskPerson;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -168,9 +170,19 @@ class ProjectController extends Controller
             $projectProgress = ProjectProgress::where('projectId', $id)->get();
             $projectPayments = ProjectPayment::where('projectId', $id)->get();
             $projectInstitutions = ProjectInstitution::where('projectId', $id)->get();
+            $tasks = Task::where('projectId', $id)->get();
             $institutions = Institution::where('id', $projectInstitutions[0]->institutionId)->get();
             $project[0]->institution = $institutions[0]->name;
             $project[0]->paid = $project[0]->paid == 1;
+            foreach ($tasks as $task){
+                $tasksPeople = TaskPerson::where('taskId', $task->id)->get();
+                $people = array();
+                foreach ($tasksPeople as $taskPerson) {
+                    $person = Person::where('id', $taskPerson->personId)->get();
+                    array_push($people, $person[0]);
+                }
+                $task->people = $people;
+            }
             foreach ($projectPeople as $projectPerson ){
                 $person = Person::where('id', $projectPerson->personId)->get();
                 $person[0]->role = $projectPerson->role;
@@ -191,6 +203,7 @@ class ProjectController extends Controller
             $project[0]->peopleInvolved = $peopleInvolved;
             $project[0]->progress = $projectProgresses;
             $project[0]->payments = $payments;
+            $project[0]->tasks = $tasks;
             return $project[0];
         } catch (\Exception $exception){
             Log::channel('stdout')->error($exception);
