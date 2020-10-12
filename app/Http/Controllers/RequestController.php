@@ -120,7 +120,7 @@ class RequestController extends Controller
             {
                 $aid_req = Aid::where('id',$req->id_aid)->get();
                 $req->aid = $aid_req[0]->name." ".$aid_req[0]->measure;
-                $resp = Resp::where('id_req',$req->id);
+                $resp = Resp::where('id_req',$req->id)->get();
                 if ($resp->count() == 0)
                 {
                     $req->status = "Esperando Respuesta";
