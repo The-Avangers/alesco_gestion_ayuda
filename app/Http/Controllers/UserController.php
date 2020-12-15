@@ -28,6 +28,7 @@ class UserController extends Controller
             $returnUsers = array();
             foreach ($users as $user) {
                 $userData = new \stdClass();
+                $userData->id = $user->id;
                 $userData->ci = $user->ci;
                 $userData->name = $user->name;
                 $userData->lastname = $user->lastname;
@@ -158,9 +159,15 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
-    {
-        //
+    public function destroy(Request $request, $id)
+    {   
+        try {
+            $user = User::find($id);
+            $user->delete();
+            return $user;
+        } catch (\Exception $exception) {
+            return response()->json(['Message' => 'Bad Request'], 400);
+        }
     }
 
     public function changePassword(Request $request) {
