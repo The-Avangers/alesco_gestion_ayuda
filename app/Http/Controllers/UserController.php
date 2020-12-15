@@ -28,6 +28,7 @@ class UserController extends Controller
             $returnUsers = array();
             foreach ($users as $user) {
                 $userData = new \stdClass();
+                $userData->ci = $user->ci;
                 $userData->name = $user->name;
                 $userData->lastname = $user->lastname;
                 $userData->email = $user->email;
