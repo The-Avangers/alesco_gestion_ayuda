@@ -29,6 +29,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('requests', 'RequestController');
     Route::resource('tasks', 'TaskController');
     Route::resource('users', 'UserController');
+    Route::post('/users/changePassword', 'UserController@changePassword')->name('users.changePassword');
 });
 Route::resource('user', 'Auth\RegisterController');
 Route::post('login', 'Auth\LoginController@login')->name('user.login');
